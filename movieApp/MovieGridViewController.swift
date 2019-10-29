@@ -11,6 +11,8 @@ import AlamofireImage
 
 class MovieGridViewController: UIViewController,UICollectionViewDataSource, UICollectionViewDelegate {
     
+    @IBOutlet weak var collectionView: UICollectionView!
+
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return movies.count
     }
@@ -22,8 +24,7 @@ class MovieGridViewController: UIViewController,UICollectionViewDataSource, UICo
         let baseUrl = "https://image.tmdb.org/t/p/w185"
         let posterPath = movie["poster_path"] as! String
         let posterUrl = URL(string:baseUrl+posterPath)!
-              
-        /*cell.posterView.af_setImage(withURL: posterUrl)*/
+        cell.posterView.af_setImage(withURL: posterUrl)
         return cell
     }
     
@@ -35,8 +36,16 @@ class MovieGridViewController: UIViewController,UICollectionViewDataSource, UICo
     override func viewDidLoad() {
         super.viewDidLoad()
         
-       // posterView.delegate = self
-        //posterView.dataSource = self
+       collectionView.delegate = self
+        collectionView.dataSource = self
+        
+        let layout = collectionView.collectionViewLayout as! UICollectionViewFlowLayout
+        layout.minimumLineSpacing = 40
+        layout.minimumInteritemSpacing=4
+        
+        let width = (view.frame.size.width/3-layout.minimumInteritemSpacing*2)
+        layout.itemSize = CGSize(width: width, height: width*1.5)
+        
         
         
         let url = URL(string: "https://api.themoviedb.org/3/movie/297762/similar?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed")!
@@ -49,9 +58,8 @@ class MovieGridViewController: UIViewController,UICollectionViewDataSource, UICo
                   }else if let data = data,
         let dataDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]{
         self.movies = dataDictionary["results"] as! [[String:Any]]
-        print(self.movies)
-    
-
+    self.collectionView.reloadData()
+                
                   }
                }
                task.resume()
