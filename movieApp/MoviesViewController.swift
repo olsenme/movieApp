@@ -21,8 +21,9 @@ class MoviesViewController: UIViewController, UITableViewDataSource,UITableViewD
         let title = movie["title"] as! String
         let synopsis = movie["overview"] as! String
         cell.titleLabel.text = title
-        print(synopsis)
+        cell.titleLabel.sizeToFit()
         cell.synopsisLabel.text = synopsis
+        cell.synopsisLabel.sizeToFit()
         let baseUrl = "https://image.tmdb.org/t/p/w185"
         let posterPath = movie["poster_path"] as! String
         let posterUrl = URL(string:baseUrl+posterPath)!
@@ -47,7 +48,6 @@ class MoviesViewController: UIViewController, UITableViewDataSource,UITableViewD
     // MARK: -Private Functions
     
     private func retrieveMovies(){
-        print("Hello")
 
         let url = URL(string: "https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed")!
         let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 10)
@@ -60,8 +60,6 @@ class MoviesViewController: UIViewController, UITableViewDataSource,UITableViewD
             let dataDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]{
             self.movies = dataDictionary["results"] as! [[String:Any]]
             self.tableView.reloadData()
-            print(dataDictionary)
-            
 
               // TODO: Get the array of movies
               // TODO: Store the movies in a property to use elsewhere
@@ -71,13 +69,6 @@ class MoviesViewController: UIViewController, UITableViewDataSource,UITableViewD
         }
         task.resume()
         }
-    }
-
-
-
-
-
-        
         
         // This will run when the network request returns
           
@@ -99,14 +90,24 @@ class MoviesViewController: UIViewController, UITableViewDataSource,UITableViewD
 
     
 
-    /*
+    
     // MARK: - Navigation
-
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destination.
         // Pass the selected object to the new view controller.
+       //find selected movie
+        let cell = sender as! UITableViewCell
+        let indexPath = tableView.indexPath(for: cell)!
+        let movie = movies[indexPath.row]
+        //pass selected movie to view controller
+        let detailsViewController = segue.destination as! MovieDetailsViewController
+        detailsViewController.movie = movie;
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+        
     }
-    */
+}
+    
 
 
